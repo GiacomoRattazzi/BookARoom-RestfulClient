@@ -5,6 +5,7 @@ import bookaroomrestfulclient.exceptions.DoesNotExistException;
 //import ch.unil.doplab.grocerystorerestfulclient.models.Foods;
 import bookaroomrestfulclient.models.Users;
 import bookaroomrestfulclient.models.Rooms;
+import bookaroomrestfulclient.models.Dates;
 import java.util.List;
 import java.io.IOException;
 import java.io.StringReader;
@@ -32,6 +33,7 @@ public class PersistenceClient {
     
     private static final String USERS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.users";
     private static final String ROOMS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.rooms";
+    private static final String DATES_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.dates";
 
     private static Client client;
     private static WebTarget target;
@@ -137,7 +139,7 @@ public class PersistenceClient {
     }
     
     private List<Rooms> parseRoomList(String xml) {
-        List<Rooms> foodList = new ArrayList<>();
+        List<Rooms> roomList = new ArrayList<>();
         NodeList list = parseDocument(xml).getElementsByTagName("rooms");
         for (int i = 0; i < list.getLength(); i++) {
             Element e = (Element) list.item(i);
@@ -150,9 +152,32 @@ public class PersistenceClient {
             room.setRoomType(e.getElementsByTagName("roomType").item(0).getTextContent());
             
 
-            foodList.add(room);
+            roomList.add(room);
         }
-        return foodList;
+        return roomList;
+    }
+    
+    //DATES
+    
+    public List<Dates> getAllDates() {
+        return parseDateList(client.target(DATES_URL).request().get(String.class));
+    }
+    
+    private List<Dates> parseDateList(String xml) {
+        List<Dates> datesList = new ArrayList<>();
+        NodeList list = parseDocument(xml).getElementsByTagName("dates");
+        for (int i = 0; i < list.getLength(); i++) {
+            Element e = (Element) list.item(i);
+
+            Dates date = new Dates();
+            date.setDateId(Integer.valueOf(e.getElementsByTagName("dateId").item(0).getTextContent()));
+            date.setRoomName(e.getElementsByTagName("roomName").item(0).getTextContent());
+            date.setRoomDate(e.getElementsByTagName("roomDate").item(0).getTextContent());
+  
+
+            datesList.add(date);
+        }
+        return datesList;
     }
 
 
