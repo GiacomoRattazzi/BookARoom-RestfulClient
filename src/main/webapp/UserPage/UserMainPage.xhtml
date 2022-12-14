@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>BookARoom</title>
+        <style type="text/css">
+            body {
+                background-image: url(../images/user_main.jpg);
+                background-size: 100%;
+                background-repeat: no-repeat;
+                background-position: top;
+             
+            }
+            .UserPage {
+                width: 25%;
+                margin: auto;
+                background: transparent;
+                border-radius: 5px;
+                padding: 30px;
+            }
+        </style>
+    </h:head>
+    <h:body>
+         <h1 style="font-family: 'Helvetica'; color: white; -webkit-text-stroke: 3px red; text-shadow: red 5px 0 1px;
+            font-size: 70px; font-weight: bold; text-align: center;">BookARoom</h1>
+        <div class="UserPage">
+            <h:form>
+                <h:panelGrid columns="1" cellpadding="10" style="text-align: center"> 
+                    <p:commandButton value="User Informations" action="/UserPage/ShowInfo.xhtml?faces-redirect=true"
+                                     style="background-color: black; color: white; 
+                                     border-color: #FF2272; border-width: 5px; 
+                                     font-size: 20px; padding: 10px;" 
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';" />
+                    <p:commandButton value="Book a Room" action="/UserPage/SeeRoomsUser.xhtml?faces-redirect=true"
+                                     style="background-color: black; color: white; 
+                                     border-color: #FF2272; border-width: 5px;
+                                     font-size: 20px; padding: 10px;"
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';" />
+                    <p:commandButton value="Bookings" action="/UserPage/SeeBooking.xhtml?faces-redirect=true"
+                                     style="background-color: black; color: white; 
+                                     border-color: #FF2272; border-width: 5px;
+                                     font-size: 20px; padding: 10px;"
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';" />
+                    <p:commandButton value="Hotel Reviews" action="/UserPage/SeeComments.xhtml?faces-redirect=true"
+                                     style="background-color: black; color: white; 
+                                     border-color: #FF2272; border-width: 5px;
+                                     font-size: 20px; padding: 10px;"
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';" />
+                    <p:commandButton value="Log out" action="#{loginBean.userLogsout()}"
+                                     style="background-color: black; color: white; 
+                                     border-color: #FF2272; border-width: 5px;
+                                     font-size: 20px; padding: 10px;"
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';" />     
+            </h:panelGrid>  
+            </h:form>
+        </div>
+    </h:body>
+</html>

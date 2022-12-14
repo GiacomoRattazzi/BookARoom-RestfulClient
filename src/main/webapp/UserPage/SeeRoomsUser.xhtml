@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title>Hotel Rooms</title>
+        <style>
+            h1 {
+                font-family: 'Helvetica'; 
+                color: white; 
+                -webkit-text-stroke: 3px red; 
+                text-shadow: red 5px 0 1px;
+                font-size: 70px; 
+                font-weight: bold; 
+                text-align: center;
+            }
+            .cheap {
+            background-color: black !important;
+            color: #FF2272 !important;
+            }
+        </style>
+    </h:head>
+    <h:body style="background-color: black">
+        <h:form>
+            <h1>BookARoom</h1>
+            
+            <p:commandButton value="Go Back to Main Menu" action="/UserPage/UserMainPage.xhtml?faces-redirect=true"
+                                 style="background-color: black;color: white;
+                                 border-color: #FF2272; border-width: 5px; margin-left: 42%"
+                                 onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                 onmouseout="this.style.background='black';this.style.color='white';" />
+            
+            <p:dataTable var="room" value="#{roomBean.rooms}" paginator="true" rows="5"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" rowStyleClass="cheap" style="margin-top:20px">
+                
+                <p:column>
+                    <f:facet name="header">
+                        Image
+                    </f:facet>
+                    <p:graphicImage name="/images/#{room.roomType}"/> 
+                    <img src="../images/#{room.roomType}.jpeg" width="200" height="150" alt="Picture :#{room.roomType}"/>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        Room Name
+                    </f:facet>
+                    <h:outputText value="#{room.roomName}" style="font-size: 18px; font-weight: bold;"/>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        Price
+                    </f:facet>
+                    <h:outputText value="#{room.roomPrice} CHF" style="font-size: 18px; font-weight: bold;"/>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        Details
+                    </f:facet>
+                    <span style="font-size: 14px; font-weight: bold">Room Type : #{room.roomType}</span>
+                    <br>
+                        <span style="font-size: 12px">Description : #{room.description}</span>
+                    </br>
+                </p:column>
+                
+                <p:column>
+                    <f:facet name="header">
+                        Book
+                    </f:facet>
+                    <p:commandButton value="Book Now!" style="background-color: black;color: white;
+                                     border-color: #FF2272; border-width: 5px; width: 150px;" 
+                                     action="#{roomBean.setRoomNameAndRedirect(room.roomName)}"
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,86 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head>
+        <title>Booking a room</title>
+        <style>
+            h1 {
+                font-family: 'Helvetica'; 
+                color: white; 
+                -webkit-text-stroke: 3px red; 
+                text-shadow: red 5px 0 1px;
+                font-size: 70px; 
+                font-weight: bold; 
+                text-align: center;
+            }
+        </style>
+    </h:head>
+    <h:body style="background-color: black">
+        <h:form id="form">
+            <h1>BookARoom</h1>
+            <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true" />
+            
+            <h:panelGrid columns="2" style="margin: auto" cellspacing="10">
+                <p:commandButton value="Go Back to Main Menu" action="/UserPage/UserMainPage.xhtml?faces-redirect=true"
+                                 style="background-color: black;color: white;
+                                 border-color: #FF2272; border-width: 5px; margin: auto;"
+                                 onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                 onmouseout="this.style.background='black';this.style.color='white';" />
+                <p:commandButton value="Go Back to Room selection" action="/UserPage/SeeRoomsUser.xhtml?faces-redirect=true"
+                                 style="background-color: black;color: white;
+                                 border-color: #FF2272; border-width: 5px; margin: auto;"
+                                 onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                 onmouseout="this.style.background='black';this.style.color='white';" />
+            </h:panelGrid>
+            <br></br><br></br>
+            <h:panelGrid columns="2"  style="margin: auto 25%; color: white;
+                         font-family:'Helvetica'; text-align: match-parent; font-size: x-large;
+                         font-weight: bold; column-width: 500px" cellpadding="10" cellspacing="20">
+                
+                <p:outputLabel for="range" value="Pick the dates " style="text-align: center; font-size: x-large"/>
+                <p:datePicker id="range" selectionMode="range" value="#{roomBean.range}"  size="20"
+                              readonlyInput="true" showIcon="true" mindate="#{roomBean.today}" 
+                              inputStyle="text-align: center; font-size: large"
+                              />
+
+                <h:outputText value="You are booking "/>
+                <h:outputText value="#{roomBean.roomName}"/>
+                <h:outputText value="This room is not available at the following dates :"/>
+                
+                <h:outputText value="#{roomBean.bookedDates}"/>
+            </h:panelGrid>
+            <br></br><br></br>
+            
+            <p:commandButton value="Confirm booking" update="msgs" action="#{roomBean.finish}"
+                             style="background-color: black;color: white; border-color: #FF2272; border-width: 5px;
+                             width: 350px; height: 60px; margin: auto 40%; font-size: large; font-weight: bold"
+                             onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                             onmouseout="this.style.background='black';this.style.color='white';" icon="pi pi-check" iconPos="right"/>
+
+            <p:dialog modal="true" resizable="false" header="You have booked #{roomBean.roomName}" widgetVar="dlg" showEffect="fold">
+                <p:panelGrid id="display" columns="2" columnClasses="label,value,label,value">
+
+                    <h:outputText value="Dates" />
+                    <ui:repeat var="date" value="#{roomBean.range}" varStatus="status" size="#{roomBean.range.size()}">
+                        #{status.first ? '' : '-'}
+                        <h:outputText value="#{date}">
+                            <f:convertDateTime pattern="MM/dd/yyyy" type="localDate"/>
+                        </h:outputText>
+                    </ui:repeat>
+                    <h:outputText value="Total Price:" />
+                    <h:outputText value="#{roomBean.totalPrice}">
+                    </h:outputText>
+                </p:panelGrid>
+                <p:commandButton value="See the rooms that you booked" action="/UserPage/SeeBooking.xhtml?faces-redirect=true" 
+                                     style="background-color: black;color: white; border-color: #FF2272; border-width: 5px;
+                                      margin: auto; font-size: large; font-weight: bold; size: auto"
+                                     onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                     onmouseout="this.style.background='black';this.style.color='white';" 
+                                     icon="pi pi-check" iconPos="right" />
+            </p:dialog>
+        </h:form>
+    </h:body>
+</html>

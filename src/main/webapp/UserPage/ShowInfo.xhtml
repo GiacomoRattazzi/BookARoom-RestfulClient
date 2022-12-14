@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>BookARoom</title>
+        <style>
+            h1 {
+                font-family: 'Helvetica'; 
+                color: white; 
+                -webkit-text-stroke: 3px red; 
+                text-shadow: red 5px 0 1px;
+                font-size: 70px; 
+                font-weight: bold; 
+                text-align: center;
+            }
+            h2 {
+                font-family: 'Helvetica'; 
+                color: white; 
+                -webkit-text-stroke: 2px red; 
+                font-size: 50px; 
+                font-weight: bold; 
+                text-align: center;
+                margin-top: 5%;
+            }
+        </style>
+    </h:head>
+    <h:body style="background-color: black">
+        <h1>BookARoom</h1>
+        <h2>User Infos</h2>
+        <h:form>
+            <h:panelGrid columns="2" style="margin: auto">
+                <p:commandButton value="Go Back to Main Menu" action="/UserPage/UserMainPage.xhtml?faces-redirect=true"
+                                 style="background-color: black;color: white;
+                                 border-color: #FF2272; border-width: 5px; margin: auto;"
+                                 onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                 onmouseout="this.style.background='black';this.style.color='white';" />
+                <p:commandButton value="Change user information" action="/UserPage/ChangeInfo.xhtml?faces-redirect=true"
+                                 style="background-color: black;color: white;
+                                 border-color: #FF2272; border-width: 5px; margin: auto;"
+                                 onmouseover="this.style.background='#FF2272';this.style.color='white';" 
+                                 onmouseout="this.style.background='black';this.style.color='white';" />
+            </h:panelGrid>
+            
+            <h:panelGrid columns="2" border="10" style="margin: auto; color: white; 
+                         font-family:'Helvetica'; font-size: large;
+                         font-weight: bold;" cellpadding="10" cellspacing="10">    
+                <h:outputText value="Username:"/>
+                <h:outputText value="#{loginBean.currentUser.username}"/>
+                <h:outputText value="First Name:"/>
+                <h:outputText value="#{loginBean.currentUser.firstName}"/>
+                <h:outputText value="Last Name:"/>
+                <h:outputText value="#{loginBean.currentUser.lastName}"/>
+                <h:outputText value="Email:"/>
+                <h:outputText value="#{loginBean.currentUser.email}"/>
+                <h:outputText value="Credit card number"/>
+                <h:outputText value="****************"/>
+                <h:outputText value="Credit card number expiration date"/>
+                <h:outputText value="#{loginBean.currentUser.ccexpirationdate}">
+                    <f:convertDateTime pattern="MM/yy" />
+                </h:outputText>
+            </h:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+
