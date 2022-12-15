@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
@@ -35,9 +37,9 @@ getBookedDates() --> DONE
 findRoomByNameInTheHotel() --> dont use it?
 findRoomPrice() --> DONE
 getLatestResNumber() --> DONE
-AddResToRes() --> next
-addDatesBooked() --> maybe last
-deleteDatesBooked() --> maybe last
+AddResToRes() --> DONE
+addDatesBooked() --> DONE
+deleteDatesBooked() --> DONE
 
 */
 
@@ -59,7 +61,7 @@ public class RoomBean implements Serializable {
     private LocalDate DelArrivalDate;
     private LocalDate DelDepartureDate;
     private List<Dates> bookedDates = new ArrayList();
-  
+    private List<Dates> DelBookedDates = new ArrayList();
     
     public List<Rooms> getRooms() {
         return PersistenceClient.getInstance().getAllRooms();
@@ -194,37 +196,33 @@ public class RoomBean implements Serializable {
         Reservations r = PersistenceClient.getInstance().getReservationByNumber(newReservation.getReservationNumber());
         PersistenceClient.getInstance().addToHasReservations(user.getUserId(), r.getReservationId());
     }
-   
-   
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    public void finish() {
-        addResToRes();
-        PrimeFaces.current().ajax().update("form:display");
-        PrimeFaces.current().executeScript("PF('dlg').show()");
+    public void addDatesBooked() {
+       List<LocalDate> tempdate = getDatesBetween();
+       for (int i = 0; i <tempdate.size(); i++) {
+           Dates date = new Dates();
+           date.setRoomName(roomName);
+           date.setRoomDate(tempdate.get(i).toString());
+           PersistenceClient.getInstance().addDate(date);
+       }
     }
     
+   
+    public void finish() {
+        
+        dateFor();
+        if (roomEmpty==false) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This date is already booked: " + temp2 ));
+        }else{
+            addResToRes();
+            addDatesBooked();
+            PrimeFaces.current().ajax().update("form:display");
+            PrimeFaces.current().executeScript("PF('dlg').show()");
+    }
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+ 
     //Get current user Reservations
     public List<Reservations> getResInReservations() {
         Users user = LoginBean.getUserLoggedIn();
@@ -239,9 +237,72 @@ public class RoomBean implements Serializable {
         RemoveResNbr = Rnbr;
     }
     
-    
-    
-    
+    public void removeRoomFromReservations() {
+        Users user = LoginBean.getUserLoggedIn();
+        List<Reservations> reservationsList = PersistenceClient.getInstance().getAllResInReservations(user.getUserId());
+        testDates(RemoveResNbr);
+        deleteDatesBooked();
+        for (Reservations reservation : reservationsList) {
+            if (reservation.getReservationNumber().equals(RemoveResNbr)) {
+                PersistenceClient.getInstance().removeFromReservations(user.getUserId(), reservation.getReservationId());
+            }
+        }
     }
+    
+    public void testDates(int resnbr) { 
+        Users user = LoginBean.getUserLoggedIn();
+        List<Reservations> reservationsList = PersistenceClient.getInstance().getAllResInReservations(user.getUserId());
+        for (Reservations res : reservationsList) {
+            if (res.getReservationNumber() == resnbr) {
+                DelArrivalDate = LocalDate.parse(res.getDateArrival());
+                DelDepartureDate = LocalDate.parse(res.getDateDeparture());
+                DelRoomName = res.getRoomName();
+            }
+        }
+    }
+    
+    private List<LocalDate> getRangeFromReservations(){
+        if(DelArrivalDate == null) {
+            return null;
+        } else {
+            long numOfDaysBetween = ChronoUnit.DAYS.between(DelArrivalDate, DelDepartureDate); 
+            return IntStream.iterate(0, i -> i + 1)
+              .limit(numOfDaysBetween)
+              .mapToObj(i -> DelArrivalDate.plusDays(i))
+              .collect(Collectors.toList());
+                
+        }
+    }
+    
+    public void deleteDatesBooked() {
+        Users user = LoginBean.getUserLoggedIn();
+        List<LocalDate> deletingdates = getRangeFromReservations();
+        try {
+            DelBookedDates = PersistenceClient.getInstance().getAllDatesByRoomName(DelRoomName);
+            for (int i = 0; i < deletingdates.size(); i++) {
+                for (Dates d : DelBookedDates) {
+                    System.out.println(d.getRoomDate());
+                    if (d.getRoomDate().equals(deletingdates.get(i).toString())) {
+                        System.out.println(d.getDateId());
+                        PersistenceClient.getInstance().removeFromDates(d.getDateId());  
+                }
+            }
+                
+        }
+        } catch (NullPointerException e) {
+        }
+    }
+    
+    
+      
+    
+    
+
+
+
+}
+    
+    
+    
     
 

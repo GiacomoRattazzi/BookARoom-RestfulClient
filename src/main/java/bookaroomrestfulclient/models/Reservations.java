@@ -66,9 +66,7 @@ public class Reservations {
 
     public void setDateDeparture(String dateDeparture) {
         this.dateDeparture = dateDeparture;
-    }
-
-   
+    }  
 
 }
 

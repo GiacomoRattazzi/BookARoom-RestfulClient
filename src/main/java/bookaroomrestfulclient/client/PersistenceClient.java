@@ -179,6 +179,7 @@ public class PersistenceClient {
 
             Reservations reservation = new Reservations();
             reservation.setReservationId(Integer.valueOf(e.getElementsByTagName("reservationId").item(0).getTextContent()));
+            reservation.setReservationNumber(Integer.valueOf(e.getElementsByTagName("reservationNumber").item(0).getTextContent()));
             reservation.setRoomName(e.getElementsByTagName("roomName").item(0).getTextContent());
             reservation.setTotalPrice(Double.valueOf(e.getElementsByTagName("totalPrice").item(0).getTextContent()));
             reservation.setDateArrival(e.getElementsByTagName("dateArrival").item(0).getTextContent());
@@ -198,6 +199,7 @@ public class PersistenceClient {
 
         Reservations reservation = new Reservations();
         reservation.setReservationId(Integer.valueOf(e.getElementsByTagName("reservationId").item(0).getTextContent()));
+        reservation.setReservationNumber(Integer.valueOf(e.getElementsByTagName("reservationNumber").item(0).getTextContent()));
         reservation.setRoomName(e.getElementsByTagName("roomName").item(0).getTextContent());
         reservation.setTotalPrice(Double.valueOf(e.getElementsByTagName("totalPrice").item(0).getTextContent()));
         reservation.setDateArrival(e.getElementsByTagName("dateArrival").item(0).getTextContent());
@@ -225,6 +227,11 @@ public class PersistenceClient {
     public List<Reservations> getAllResInReservations(int id) {
         return parseReservationsList(client.target(USERS_URL + "/getReservations/" + id).request().get(String.class));
     }
+    
+    public void removeFromReservations(int uId, int rId) {
+        client.target(USERS_URL + "/removeFromReservations/" + uId + "/" + rId).request().get();
+    }
+    
    
 
 
@@ -264,6 +271,15 @@ public class PersistenceClient {
             datesList.add(date);
         }
         return datesList;
+    }
+    
+    
+    public void addDate(Dates date) {
+        client.target(DATES_URL + "/create").request().post(Entity.entity(date, "application/xml"));
+    }
+    
+    public void removeFromDates(int dId) {
+        client.target(DATES_URL + "/removeFromDates/" + dId).request().get();
     }
 
 
