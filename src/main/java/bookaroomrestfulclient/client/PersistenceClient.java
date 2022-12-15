@@ -6,6 +6,7 @@ import bookaroomrestfulclient.exceptions.DoesNotExistException;
 import bookaroomrestfulclient.models.Users;
 import bookaroomrestfulclient.models.Rooms;
 import bookaroomrestfulclient.models.Dates;
+import bookaroomrestfulclient.models.Reservations;
 import java.util.List;
 import java.io.IOException;
 import java.io.StringReader;
@@ -34,6 +35,7 @@ public class PersistenceClient {
     private static final String USERS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.users";
     private static final String ROOMS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.rooms";
     private static final String DATES_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.dates";
+    private static final String RESERVATIONS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.reservations";
 
     private static Client client;
     private static WebTarget target;
@@ -138,6 +140,11 @@ public class PersistenceClient {
         return parseRoomList(client.target(ROOMS_URL).request().get(String.class));
     }
     
+    public Rooms getCurrentRoom(String roomName) {
+        List<Rooms> r = parseRoomList(client.target(ROOMS_URL + "/findByRoomName/" + roomName).request().get(String.class));
+            return r.get(0);
+    }
+    
     private List<Rooms> parseRoomList(String xml) {
         List<Rooms> roomList = new ArrayList<>();
         NodeList list = parseDocument(xml).getElementsByTagName("rooms");
@@ -157,10 +164,89 @@ public class PersistenceClient {
         return roomList;
     }
     
-    //DATES
+
+    //RESERVATIONS
     
-    public List<Dates> getAllDates() {
-        return parseDateList(client.target(DATES_URL).request().get(String.class));
+    public List<Reservations> getAllReservations() {
+        return parseReservationsList(client.target(RESERVATIONS_URL).request().get(String.class));
+    }
+    
+    private List<Reservations> parseReservationsList(String xml) {
+        List<Reservations> reservationList = new ArrayList<>();
+        NodeList list = parseDocument(xml).getElementsByTagName("reservations");
+        for (int i = 0; i < list.getLength(); i++) {
+            Element e = (Element) list.item(i);
+
+            Reservations reservation = new Reservations();
+            reservation.setReservationId(Integer.valueOf(e.getElementsByTagName("reservationId").item(0).getTextContent()));
+            reservation.setRoomName(e.getElementsByTagName("roomName").item(0).getTextContent());
+            reservation.setTotalPrice(Double.valueOf(e.getElementsByTagName("totalPrice").item(0).getTextContent()));
+            reservation.setDateArrival(e.getElementsByTagName("dateArrival").item(0).getTextContent());
+            reservation.setDateDeparture(e.getElementsByTagName("dateDeparture").item(0).getTextContent());
+            
+
+            reservationList.add(reservation);
+        }
+        return reservationList;
+    }
+    
+    private Reservations parseReservation(String xml) {
+        if (xml.length() == 0) {
+            return null;
+        }
+        Element e = (Element) parseDocument(xml).getElementsByTagName("reservations").item(0);
+
+        Reservations reservation = new Reservations();
+        reservation.setReservationId(Integer.valueOf(e.getElementsByTagName("reservationId").item(0).getTextContent()));
+        reservation.setRoomName(e.getElementsByTagName("roomName").item(0).getTextContent());
+        reservation.setTotalPrice(Double.valueOf(e.getElementsByTagName("totalPrice").item(0).getTextContent()));
+        reservation.setDateArrival(e.getElementsByTagName("dateArrival").item(0).getTextContent());
+        reservation.setDateDeparture(e.getElementsByTagName("dateDeparture").item(0).getTextContent());
+
+        return reservation;
+    }
+    
+   public void createReservation(Reservations reservation) {
+        client.target(RESERVATIONS_URL + "/create").request().post(Entity.entity(reservation, "application/xml"));
+        System.out.println("a");
+    }    
+   
+   public Reservations getReservationByNumber(int number) {
+        Reservations r = parseReservation(client.target(RESERVATIONS_URL + "/findByReservationNumber/" + number).request().get(String.class));
+            return r;
+   }
+
+   
+   public void addToHasReservations(int uId, int rId) {
+       client.target(USERS_URL + "/addToReservationUser/" + uId + "/" + rId).request().get();
+   }
+   
+   
+    public List<Reservations> getAllResInReservations(int id) {
+        return parseReservationsList(client.target(USERS_URL + "/getReservations/" + id).request().get(String.class));
+    }
+   
+
+
+    
+
+
+    //DATES
+   public List<Dates> getAllDatesByRoomName(String roomName) {
+       
+        Dates nullFixerDate = new Dates();
+        nullFixerDate.setDateId(0);
+        nullFixerDate.setRoomName("");
+        nullFixerDate.setRoomDate("");
+       
+        List<Dates> d = parseDateList(client.target(DATES_URL + "/findByRoomName/" + roomName).request().get(String.class));
+        if (d.size()> 0) {
+            return d;
+        } else {
+            List<Dates> nullFixer = new ArrayList<Dates>();
+            nullFixer.add(nullFixerDate);
+            return nullFixer;
+        }
     }
     
     private List<Dates> parseDateList(String xml) {

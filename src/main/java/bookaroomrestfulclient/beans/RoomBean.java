@@ -6,6 +6,7 @@ import bookaroomrestfulclient.models.Rooms;
 import bookaroomrestfulclient.models.Users;
 import bookaroomrestfulclient.models.Dates;
 import bookaroomrestfulclient.client.PersistenceClient;
+import bookaroomrestfulclient.models.Reservations;
 
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,7 +15,15 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -22,11 +31,11 @@ import javax.persistence.Query;
  */
 
 /* TO connect to service:
-getBookedDates()
+getBookedDates() --> DONE
 findRoomByNameInTheHotel() --> dont use it?
-findRoomPrice()
-getLatestResNumber()
-AddResToRes()
+findRoomPrice() --> DONE
+getLatestResNumber() --> DONE
+AddResToRes() --> next
 addDatesBooked() --> maybe last
 deleteDatesBooked() --> maybe last
 
@@ -50,6 +59,7 @@ public class RoomBean implements Serializable {
     private LocalDate DelArrivalDate;
     private LocalDate DelDepartureDate;
     private List<Dates> bookedDates = new ArrayList();
+  
     
     public List<Rooms> getRooms() {
         return PersistenceClient.getInstance().getAllRooms();
@@ -62,14 +72,22 @@ public class RoomBean implements Serializable {
     
     
     public ArrayList<String> getBookedDates() {
-        bookedDates = PersistenceClient.getInstance().getAllDates();
-        ArrayList<String> n = new ArrayList<>();
-        for (int i = 0; i < bookedDates.size(); i++ )  {
-            n.add(bookedDates.get(i).getRoomDate()); 
+        
+        try {
+            bookedDates = PersistenceClient.getInstance().getAllDatesByRoomName(roomName);
+            ArrayList<String> n = new ArrayList<>();
+            for (int i = 0; i < bookedDates.size(); i++ )  {
+                n.add(bookedDates.get(i).getRoomDate()); 
+            }
+            if (n.size() > 0) {
+                return n;
         }
-        return n; 
-
-    }     
+        } catch (NullPointerException e) {
+            ArrayList<String> emptyList = new ArrayList<>();
+            emptyList.add("");
+            return emptyList;
+    }return null;
+    }
     
     
     
@@ -99,24 +117,14 @@ public class RoomBean implements Serializable {
         return today.plusMonths(1).withDayOfMonth(1);
     }
     
-    
-    
-    
-    
-    
-    
-    
         
     //find price of current room that user is booking
-    private double findRoomPrice() {
-        return 0;
-        /*TODO
-        Query query = em.createNamedQuery("Rooms.findByRoomName");
-        List<Rooms> rooms = query.setParameter("roomName", roomName).getResultList();
-                return rooms.get(0).getRoomPrice();*/
-            }
+    public double findRoomPrice() {
 
-        
+        Rooms r = new Rooms();
+        r = PersistenceClient.getInstance().getCurrentRoom(roomName);
+        return r.getRoomPrice();
+        }
        
     //get total price of the room that user is booking (nbr of nights*roomPrice)
     
@@ -136,4 +144,104 @@ public class RoomBean implements Serializable {
         this.totalPrice = totalPrice;
     }
     
-}
+    //get Latest Reservation Number
+    public int getLatestResNumber() {
+        return PersistenceClient.getInstance().getAllReservations().size();
+    }
+    
+    //get all dates between range picked by user
+    public List<LocalDate> getDatesBetween() { 
+        if(range == null) {
+            return null;
+        } else {
+            long numOfDaysBetween = ChronoUnit.DAYS.between(range.get(0), range.get(1)); 
+            return IntStream.iterate(0, i -> i + 1)
+              .limit(numOfDaysBetween)
+              .mapToObj(i -> range.get(0).plusDays(i))
+              .collect(Collectors.toList());
+                
+        }
+    }
+    
+    //Check if the user inputted dates are available for the current room
+    public void dateFor() {
+        roomEmpty = true;
+        temp2 = "";
+        for (LocalDate tempBooked : getDatesBetween()) {
+            test1 = tempBooked;
+            for (String dateBooked : getBookedDates()) {
+                if(test1.toString().equals(dateBooked) == true) {
+                    roomEmpty = false;
+                    temp2 = dateBooked;
+                    break;
+                }
+            }
+        }
+        }
+   
+    //add new reservation + add link in user_has_reservations
+    public void addResToRes() {
+        Users user = LoginBean.getUserLoggedIn();
+        
+        Reservations newReservation = new Reservations();
+        newReservation.setReservationNumber(getLatestResNumber()+1);
+        newReservation.setRoomName(roomName);
+        newReservation.setTotalPrice(getTotalPrice());
+        newReservation.setDateArrival(range.get(0).toString());
+        newReservation.setDateDeparture(range.get(1).toString());
+        PersistenceClient.getInstance().createReservation(newReservation);
+        
+        Reservations r = PersistenceClient.getInstance().getReservationByNumber(newReservation.getReservationNumber());
+        PersistenceClient.getInstance().addToHasReservations(user.getUserId(), r.getReservationId());
+    }
+   
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public void finish() {
+        addResToRes();
+        PrimeFaces.current().ajax().update("form:display");
+        PrimeFaces.current().executeScript("PF('dlg').show()");
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //Get current user Reservations
+    public List<Reservations> getResInReservations() {
+        Users user = LoginBean.getUserLoggedIn();
+        return PersistenceClient.getInstance().getAllResInReservations(user.getUserId());
+    }
+   
+    public int getResNbr(){
+        return RemoveResNbr;
+    }
+    
+    public void setResNbr(int Rnbr) {
+        RemoveResNbr = Rnbr;
+    }
+    
+    
+    
+    
+    }
+    
+

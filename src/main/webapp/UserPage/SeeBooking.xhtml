@@ -52,7 +52,7 @@
             </h:panelGrid>
             <h:panelGrid columns="1" style="margin:auto" >
                 
-                <ui:repeat value="#{loginBean.currentUser.reservationsList}" var="item">
+                <ui:repeat value="#{roomBean.resInReservations}" var="item">
                     <div class="reviewWrapper">
                         <h:panelGrid columns="2">
                         <h:outputText value="Reservation number:" style="font-weight: bold" />
