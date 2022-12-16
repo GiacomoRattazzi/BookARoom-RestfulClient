@@ -2,6 +2,7 @@ package bookaroomrestfulclient.client;
 
 import bookaroomrestfulclient.exceptions.AlreadyExistsException;
 import bookaroomrestfulclient.exceptions.DoesNotExistException;
+import bookaroomrestfulclient.models.Comments;
 //import ch.unil.doplab.grocerystorerestfulclient.models.Foods;
 import bookaroomrestfulclient.models.Users;
 import bookaroomrestfulclient.models.Rooms;
@@ -15,6 +16,7 @@ import java.util.Date;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import static javax.ws.rs.client.Entity.xml;
 import javax.ws.rs.client.WebTarget;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,11 +34,12 @@ import org.xml.sax.SAXException;
 public class PersistenceClient {
 
     
-    private static final String USERS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.users";
-    private static final String ROOMS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.rooms";
-    private static final String DATES_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.dates";
-    private static final String RESERVATIONS_URL = "http://localhost:8080/BookARoomRestfulService/resources/bookaroomrestfulservice.models.reservations";
-
+    private static final String USERS_URL = "http://localhost:8080/BookARoom-RestfulService/resources/bookaroomrestfulservice.models.users";
+    private static final String ROOMS_URL = "http://localhost:8080/BookARoom-RestfulService/resources/bookaroomrestfulservice.models.rooms";
+    private static final String DATES_URL = "http://localhost:8080/BookARoom-RestfulService/resources/bookaroomrestfulservice.models.dates";
+    private static final String RESERVATIONS_URL = "http://localhost:8080/BookARoom-RestfulService/resources/bookaroomrestfulservice.models.reservations";
+    private static final String COMMENTS_URL = "http://localhost:8080/BookARoom-RestfulService/resources/bookaroomrestfulservice.models.comments";
+    
     private static Client client;
     private static WebTarget target;
     private static PersistenceClient instance;
@@ -232,12 +235,7 @@ public class PersistenceClient {
         client.target(USERS_URL + "/removeFromReservations/" + uId + "/" + rId).request().get();
     }
     
-   
-
-
-    
-
-
+  
     //DATES
    public List<Dates> getAllDatesByRoomName(String roomName) {
        
@@ -294,5 +292,34 @@ public class PersistenceClient {
         }
         return null;
     }
+
+    public List<Comments> getAllComments() {
+        return parseCommentList(client.target(COMMENTS_URL).request().get(String.class));
+        
+    }
+    
+    public void createComment(Comments comment) {
+        client.target(COMMENTS_URL + "/create").request().post(Entity.entity(comment, "application/xml"));
+    }
+    
+    
+    private List<Comments> parseCommentList(String xml) {
+        
+        List<Comments> commentList = new ArrayList<>();
+        NodeList list = parseDocument(xml).getElementsByTagName("comments");
+        for (int i = 0; i < list.getLength(); i++) {
+            Element e = (Element) list.item(i);
+
+            Comments comment = new Comments();
+            comment.setCommentId(Integer.valueOf(e.getElementsByTagName("commentId").item(0).getTextContent()));
+            comment.setComment(e.getElementsByTagName("comment").item(0).getTextContent());
+            comment.setRating(Integer.valueOf(e.getElementsByTagName("rating").item(0).getTextContent()));
+            
+
+            commentList.add(comment);
+        }
+        return commentList;
+    }
+
 
 }
