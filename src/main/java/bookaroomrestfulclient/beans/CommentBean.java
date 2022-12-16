@@ -31,6 +31,7 @@ public class CommentBean implements Serializable {
     private DateTimeFormatter formatterComment = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private Integer rating;
     
+    
     public List<Comments> getComments() {
         return PersistenceClient.getInstance().getAllComments();
     }
@@ -54,6 +55,7 @@ public class CommentBean implements Serializable {
         comment = user.getUsername()+": "+comment+" ("+getTodayDate().format(formatterComment)+")";
         newComment.setComment(comment);
         newComment.setRating(rating);
+        PersistenceClient.getInstance().createComment(newComment);
         //empty values
         this.comment = "";
         this.rating = 0;
