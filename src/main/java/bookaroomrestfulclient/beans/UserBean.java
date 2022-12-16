@@ -60,7 +60,17 @@ public class UserBean implements Serializable {
         this.firstName = "";
         this.lastName = "";
         this.password = "";
-    }  
+    }
+    
+    public void modifyAUser(){
+        Users user = LoginBean.getUserLoggedIn();
+        user.setUsername(username);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPassword(password.hashCode());
+        PersistenceClient.getInstance().updateUser(user);
+    }
 
     public String getEmail() {
         return email;
