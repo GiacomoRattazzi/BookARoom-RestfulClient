@@ -58,7 +58,36 @@
         <h1>BookARoom</h1>
         <h3>One of the best hotels in town!</h3>
         <div> 
+        
         <h:form>
+            <h:panelGrid columns="2">
+                <br></br>
+                <div class="weatherWidget" >
+                window.weatherWidgetConfig =  window.weatherWidgetConfig || [];
+                window.weatherWidgetConfig.push({
+                    selector:".weatherWidget",
+                    apiKey:"5ZJJXHKSWT7P5747XC78EBRVR", //Sign up for your personal key
+                    location:"Lausanne, CH", //Enter an address
+                    unitGroup:"metric", //"us" or "metric"
+                    forecastDays:16, //how many days forecast to show
+                    title:"Forecasted weather for Lausanne", //optional title to show in the 
+                    showTitle:true, 
+                    showConditions:true
+                });
+  
+            (function() {
+             var d = document, s = d.createElement('script');
+             s.src = 'https://www.visualcrossing.com/widgets/forecast-simple/weather-forecast-widget-simple.js';
+             s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+                </div>
+
+            
+
+            </h:panelGrid>
+            
             <h:panelGrid columns="3"  cellpadding="100%" style=" margin: auto">
                 <p:commandButton value="Sign in" action="/MainPage/LoginPage.xhtml?faces-redirect=true" 
                                  style="background-color: black; color: white; border-color: #FF2272; border-width: 5px;
@@ -74,8 +103,9 @@
                                  style="background-color: black; color: white; border-color: #FF2272; border-width: 5px;
                                         padding: 10px 40px; text-align: center; font-size: 30px; cursor: pointer;"
                                      onmouseover="this.style.background='#FF2272';this.style.color='white';" 
-                                     onmouseout="this.style.background='black';this.style.color='white';"/>
+                                     onmouseout="this.style.background='black';this.style.color='white';"/>    
             </h:panelGrid>
+
         </h:form>
         </div>
     </h:body> 

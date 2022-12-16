@@ -46,6 +46,7 @@ public class PersistenceClient {
 
     private PersistenceClient() {
         PersistenceClient.client = ClientBuilder.newClient();
+        
     }
 
     public static PersistenceClient getInstance() {
