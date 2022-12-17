@@ -26,7 +26,7 @@ public class LoginBean implements Serializable {
                 currentUser = u;
                 return "/UserPage/UserMainPage.xhtml?faces-redirect=true";
             }
-        } catch (DoesNotExistException ex) {
+        } catch (DoesNotExistException | NullPointerException ex) {
             System.out.println(ex.getMessage());
         }
         return "/MainPage/LoginPage.xhtml?faces-redirect=true";

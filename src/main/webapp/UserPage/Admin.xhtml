@@ -7,16 +7,12 @@
         <title>ADMIN</title>
     </h:head>
     <h:body>
-    <h:form id="form">
-        <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true" />
-            <h:outputText value="datesBooked:"/>
-            <h:outputText value="#{roomBean.bookedDates}"/>            
+        <h:form>
+           
             
-            <br/> 
-            <p:commandButton value="try" action="#{roomBean.testingremove}" icon="pi pi-check"/>
-            <br/>
-    </h:form>
-    </h:body> 
-    
+            <h:outputText value="#{apiBean.getWeather()}"/>
+        </h:form>
+    </h:body>
 </html>
+    
 

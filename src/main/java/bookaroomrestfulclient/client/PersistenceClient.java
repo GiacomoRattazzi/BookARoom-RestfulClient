@@ -8,11 +8,17 @@ import bookaroomrestfulclient.models.Users;
 import bookaroomrestfulclient.models.Rooms;
 import bookaroomrestfulclient.models.Dates;
 import bookaroomrestfulclient.models.Reservations;
+import java.io.BufferedReader;
 import java.util.List;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -21,6 +27,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -321,6 +330,46 @@ public class PersistenceClient {
         }
         return commentList;
     }
+    
+    public String getWeather() {
+        try {
+            String urlString = "https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&hourly=temperature_2m";
+            URL url = new URL(urlString);
+            HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            
+
+            connection.setRequestMethod("GET");
+            //connection.setRequestProperty("X-RapidAPI-Key", "5df58a8dd1msh45ad036588c63a4p1117c4jsnc2ed90b8237c");
+            //connection.setRequestProperty("X-RapidAPI-Host", "community-citybikes.p.rapidapi.com");
+
+            int status = connection.getResponseCode();
+            System.out.println(status);
+            System.out.println(connection.getContentType());
 
 
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(connection.getInputStream())
+            );
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+
+            System.out.println(content);
+
+
+            JSONParser parse = new JSONParser();
+            JSONObject dataObject = (JSONObject) parse.parse(String.valueOf(content));
+
+                return dataObject.get("latitude").toString();
+//            System.out.println("TEST             " + dataObject.get("hourly"));
+
+
+        } catch (IOException | ParseException ex) {
+          System.out.print("exception:" + ex.getMessage());
+        }return "";
+
+    }
 }
