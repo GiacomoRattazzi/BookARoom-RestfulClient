@@ -42,7 +42,7 @@ public class UserBean implements Serializable {
                 Users newUser = new Users();
                 newUser.setUsername(username);
                 newUser.setFirstName(firstName);
-                newUser.setLastName(lastName);
+                 newUser.setLastName(lastName);
                 newUser.setEmail(email);
                 newUser.setPassword(password.hashCode());
                 newUser.setCcnumber(ccnumber);
