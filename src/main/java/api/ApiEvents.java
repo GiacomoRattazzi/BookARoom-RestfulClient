@@ -4,13 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
-import java.io.UnsupportedEncodingException;
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.io.FileInputStream;
 import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,8 +31,6 @@ public class ApiEvents {
         Map<String, List<String> > header = connection.getHeaderFields();
 //        Map<String, List<String>> co = connection.getRequestProperties();
   
-            // Printing all the fields along with their
-            // value
         for (Map.Entry<String, List<String> > mp : header.entrySet()) {
             System.out.print(mp.getKey() + " : ");
             System.out.println(
@@ -70,12 +62,6 @@ public class ApiEvents {
         JSONObject dataObject = (JSONObject) parse.parse(String.valueOf(content));
         JSONArray items = (JSONArray) dataObject.get("items");
         JSONObject item1 = (JSONObject) items.get(1);
-//        JSONArray nameI1 = (JSONArray) item1.get(0);
-//        
-////        
-//        JSONArray dataTime = (JSONArray) data.get("time");
-//        JSONArray dataTempMax = (JSONArray) data.get("temperature_2m_max");
-        
 
 
         System.out.println("TEST             " + dataObject);
