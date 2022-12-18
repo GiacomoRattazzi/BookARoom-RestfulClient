@@ -19,7 +19,7 @@ import javax.transaction.Transactional;
 
 /**
  *
- * @author jingminwang
+ * @author Team BookARoom
  */
 @Named(value = "commentBean")
 @SessionScoped

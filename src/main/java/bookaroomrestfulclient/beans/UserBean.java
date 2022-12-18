@@ -14,7 +14,7 @@ import java.util.Date;
 
 /**
  *
- * @author Giac
+ * @author Team BookARoom
  */
 
 @Named(value = "userBean")
