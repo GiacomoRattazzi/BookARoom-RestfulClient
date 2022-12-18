@@ -29,7 +29,7 @@ import org.primefaces.PrimeFaces;
 
 /**
  *
- * @author Giac
+ * @author Team BookARoom
  */
 
 /* TO connect to service:
